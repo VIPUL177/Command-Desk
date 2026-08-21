@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vipul — Command Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #0E1120;
+    --ink-2: #161A2E;
+    --ink-3: #1D2238;
+    --paper: #ECEEF6;
+    --muted: #848CA6;
+    --muted-2: #5C6280;
+    --amber: #E7A33E;
+    --amber-soft: rgba(231,163,62,0.14);
+    --teal: #4FB8AC;
+    --teal-soft: rgba(79,184,172,0.14);
+    --border: rgba(236,238,246,0.09);
+    --border-hover: rgba(231,163,62,0.55);
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background: radial-gradient(1100px 600px at 12% -10%, #171b30 0%, var(--ink) 55%) fixed, var(--ink);
+    color: var(--paper);
+    font-family: 'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .noise{
+    position: fixed; inset:0; pointer-events:none; opacity:0.035; z-index:0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap{ position: relative; z-index:1; max-width: 1180px; margin: 0 auto; padding: 56px 32px 90px; }
+
+  /* ---------- Header / mission strip ---------- */
+  header{
+    display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end;
+    gap: 28px; margin-bottom: 54px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 34px;
+  }
+
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--amber); margin: 0 0 10px;
+  }
+
+  h1{
+    font-family:'Fraunces', serif; font-weight: 500; font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.05; margin: 0; color: var(--paper);
+  }
+  h1 em{ font-style: italic; color: var(--muted); font-weight: 400; }
+
+  .mission-clock{
+    font-family:'JetBrains Mono', monospace; text-align: right; min-width: 220px;
+  }
+  .mission-clock .row{ display:flex; align-items:baseline; justify-content:flex-end; gap:10px; margin-bottom:6px; }
+  .mission-clock .label{ font-size: 11px; letter-spacing:0.1em; text-transform:uppercase; color: var(--muted-2); }
+  .mission-clock .value{ font-size: 15px; color: var(--paper); }
+  .mission-clock .count{
+    font-size: 34px; color: var(--amber); font-weight: 500; line-height:1;
+  }
+  .mission-clock .count-label{ font-size: 11px; color: var(--muted); letter-spacing:0.08em; text-transform:uppercase; }
+  .dot{
+    width:7px; height:7px; border-radius:50%; background: var(--amber); display:inline-block;
+    box-shadow: 0 0 0 0 rgba(231,163,62,0.6); animation: pulse 2.4s infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow: 0 0 0 0 rgba(231,163,62,0.55); }
+    70%{ box-shadow: 0 0 0 8px rgba(231,163,62,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(231,163,62,0); }
+  }
+  @media (prefers-reduced-motion: reduce){ .dot{ animation:none; } }
+
+  /* ---------- Sections ---------- */
+  section.station{ margin-bottom: 46px; }
+  .station-head{
+    display:flex; align-items:baseline; gap:14px; margin-bottom: 18px;
+  }
+  .station-head h2{
+    font-family:'Fraunces', serif; font-weight:500; font-size: 22px; margin:0; color: var(--paper);
+  }
+  .station-head .tagline{ font-size: 13px; color: var(--muted-2); font-style: italic; }
+  .station-head::after{
+    content:""; flex:1; height:1px; background: var(--border); align-self:center;
+  }
+
+  .grid{
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px;
+  }
+
+  a.card{
+    position:relative; display:flex; flex-direction:column; gap:14px;
+    background: var(--ink-2); border:1px solid var(--border); border-radius: 14px;
+    padding: 20px 20px 18px; text-decoration:none; color:inherit;
+    transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+  }
+  a.card:hover, a.card:focus-visible{
+    transform: translateY(-3px);
+    border-color: var(--border-hover);
+    background: var(--ink-3);
+    box-shadow: 0 14px 30px -18px rgba(231,163,62,0.45);
+    outline: none;
+  }
+  a.card:focus-visible{ outline: 2px solid var(--amber); outline-offset: 3px; }
+
+  .icon-badge{
+    width: 40px; height:40px; border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--amber-soft); color: var(--amber);
+    flex-shrink:0;
+  }
+  a.card.alt .icon-badge{ background: var(--teal-soft); color: var(--teal); }
+
+  .card-name{ font-family:'Fraunces', serif; font-size: 18px; font-weight:500; color: var(--paper); }
+  .card-label{
+    font-family:'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing:0.08em;
+    text-transform: uppercase; color: var(--muted-2);
+  }
+
+  .go{
+    position:absolute; top:18px; right:18px; color: var(--muted-2); opacity:0;
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  a.card:hover .go{ opacity:1; transform: translate(2px,-2px); }
+
+  footer{
+    margin-top: 70px; padding-top: 26px; border-top: 1px solid var(--border);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    font-family:'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted-2);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 640px){
+    .wrap{ padding: 36px 18px 60px; }
+    header{ flex-direction: column; align-items:flex-start; }
+    .mission-clock{ text-align:left; }
+    .mission-clock .row{ justify-content:flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="wrap">
+
+  <header>
+    <div>
+      <p class="eyebrow">Command Desk</p>
+      <h1>Everything you<br><em>open first.</em></h1>
+    </div>
+    <div class="mission-clock">
+      <div class="row"><span class="dot"></span><span class="label">Today</span><span class="value" id="today-date">—</span></div>
+      <div class="row"><span class="label">Local time</span><span class="value" id="live-time">—</span></div>
+      <div class="count" id="days-left">—</div>
+      <div class="count-label">days to GIC Mains · 30 Aug</div>
+    </div>
+  </header>
+
+  <div id="stations"></div>
+
+  <footer>
+    <span>13 stops, six stations, one desk.</span>
+    <span id="year">—</span>
+  </footer>
+
+</div>
+
+<script>
+  // ---------------- Live mission clock ----------------
+  function updateClock(){
+    const now = new Date();
+    const dateFmt = now.toLocaleDateString('en-IN', { weekday:'short', day:'2-digit', month:'short', year:'numeric' });
+    const timeFmt = now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true });
+    document.getElementById('today-date').textContent = dateFmt;
+    document.getElementById('live-time').textContent = timeFmt;
+
+    const exam = new Date('2026-08-30T00:00:00');
+    const diffMs = exam - now;
+    const daysLeft = Math.ceil(diffMs / (1000*60*60*24));
+    document.getElementById('days-left').textContent = daysLeft > 0 ? daysLeft : (daysLeft === 0 ? 'Today' : 'Done');
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+  document.getElementById('year').textContent = 'Rev. ' + new Date().getFullYear();
+
+  // ---------------- Icon set (custom, minimal stroke icons) ----------------
+  const ICONS = {
+    calendar: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/><path d="M8 14.2h.01M12 14.2h.01M16 14.2h.01M8 17.6h.01M12 17.6h.01"/></svg>`,
+    check: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M7.5 12.2l2.6 2.6 6.4-6.4"/></svg>`,
+    layers: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l8.5 4.6L12 12.7 3.5 8.1 12 3.5z"/><path d="M3.5 12.4l8.5 4.6 8.5-4.6M3.5 16.6l8.5 4.6 8.5-4.6"/></svg>`,
+    cards: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="15" height="12" rx="2"/><rect x="3" y="9" width="15" height="12" rx="2" fill="#161A2E"/></svg>`,
+    convo: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="10.5" r="6"/><path d="M15.3 15.6a6 6 0 007.1-5.9c0-.7-.13-1.37-.36-1.98"/><path d="M6 21c1.5-1 2-2.4 2-4"/></svg>`,
+    play: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M10 8.6l6 3.4-6 3.4z" fill="currentColor" stroke="none"/></svg>`,
+    bulb: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6.5 6.5 0 00-3.6 11.9c.7.5 1.1 1.3 1.1 2.1h5c0-.8.4-1.6 1.1-2.1A6.5 6.5 0 0012 3z"/></svg>`,
+    doc: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.5h8l5 5v14a1 1 0 01-1 1H6a1 1 0 01-1-1v-18a1 1 0 011-1z"/><path d="M14 2.5V8h5"/><path d="M8.5 13h7M8.5 16.3h5"/></svg>`,
+    book: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.2c2.3-1 5-1.4 8-.4v14.4c-3-1-5.7-.6-8 .4z"/><path d="M20 5.2c-2.3-1-5-1.4-8-.4v14.4c3-1 5.7-.6 8 .4z"/></svg>`,
+    folder: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.5a1.5 1.5 0 011.5-1.5h4.4l2 2.4H19a1.5 1.5 0 011.5 1.5v9.6a1.5 1.5 0 01-1.5 1.5H5a1.5 1.5 0 01-1.5-1.5z"/></svg>`,
+    shield: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5.5c0 4.6-3 8.3-7 9.5-4-1.2-7-4.9-7-9.5V6z"/><path d="M9 12.2l2 2 4-4.2"/></svg>`,
+    tree: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l4.5 6.5H13l4.5 6.5H12"/><path d="M12 3L7.5 9.5H11L6.5 16H12"/><path d="M12 16v5"/></svg>`,
+    spark: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c.5 3.4 2.2 5.1 5.6 5.6-3.4.5-5.1 2.2-5.6 5.6-.5-3.4-2.2-5.1-5.6-5.6 3.4-.5 5.1-2.2 5.6-5.6z"/><path d="M18.5 15.5c.25 1.6 1 2.35 2.6 2.6-1.6.25-2.35 1-2.6 2.6-.25-1.6-1-2.35-2.6-2.6 1.6-.25 2.35-1 2.6-2.6z"/></svg>`,
+    orbit: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="9" ry="4"/><ellipse cx="12" cy="12" rx="4" ry="9" transform="rotate(35 12 12)"/></svg>`,
+    prism: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 14H4z"/><path d="M12 3v14"/></svg>`,
+  };
+
+  // ---------------- Station data ----------------
+  const STATIONS = [
+    {
+      title: "Plan &amp; Execute", tagline: "how the day gets built",
+      tools: [
+        { name:"Google Calendar", label:"Time Management", url:"https://calendar.google.com/calendar/u/0/r", icon:"calendar" },
+        { name:"TickTick", label:"Task Management", url:"https://ticktick.com/webapp/#q/all/tasks", icon:"check" },
+      ]
+    },
+    {
+      title: "Learn &amp; Study", tagline: "where the syllabus gets covered",
+      tools: [
+        { name:"Notion", label:"Knowledge Management", url:"https://app.notion.com/p/df886b48f67c466283dfdb0585110294", icon:"layers" },
+        { name:"Quizlet", label:"Deep Study", url:"https://quizlet.com/latest", icon:"cards" },
+        { name:"NotebookLM", label:"Study Partner", url:"https://notebook.google.com/?_gl=1*z8utv8*_ga*MTM5MTI1MjY0Ny4xNzQ3MjgyODQ2*_ga_W0LDH41ZCB*czE3NDcyODI4NDYkbzEkZzEkdDE3NDcyODI4NDYkajYwJGwwJGgw&original_referer=https:%2F%2Fnotebooklm.google%23&pli=1", icon:"convo" },
+        { name:"Khan Academy", label:"Learning Partner", url:"https://www.khanacademy.org/", icon:"play" },
+        { name:"YouTube", label:"Learning Partner", url:"https://www.youtube.com/", icon:"play" },
+      ]
+    },
+    {
+      title: "Capture &amp; Write", tagline: "where the thoughts land",
+      tools: [
+        { name:"Google Keep", label:"Quick Capture", url:"https://keep.google.com/u/0/", icon:"bulb" },
+        { name:"Google Docs", label:"Notes Making", url:"https://docs.google.com/document/u/0/", icon:"doc" },
+        { name:"Day One", label:"Journal", url:"https://dayone.me/journals/101200220685", icon:"book" },
+      ]
+    },
+    {
+      title: "Files &amp; Records", tagline: "where the paperwork lives",
+      tools: [
+        { name:"Google Drive", label:"Files", url:"https://drive.google.com/drive/my-drive", icon:"folder" },
+        { name:"DigiLocker", label:"Documents", url:"https://www.digilocker.gov.in/web/issued-documents", icon:"shield" },
+      ]
+    },
+    {
+      title: "Focus", tagline: "where distraction gets shut out",
+      tools: [
+        { name:"Forest", label:"Focus", url:"https://forestapp.cc/", icon:"tree" },
+      ]
+    },
+    {
+      title: "AI Crew", tagline: "backup on tap, any hour",
+      alt: true,
+      tools: [
+        { name:"Claude", label:"AI Assistance", url:"https://claude.ai/new", icon:"spark" },
+        { name:"ChatGPT", label:"AI Assistance", url:"https://chatgpt.com/", icon:"orbit" },
+        { name:"Gemini", label:"AI Assistance", url:"https://gemini.google.com/app?hl=en-IN", icon:"prism" },
+        { name:"NotebookLM", label:"AI Assistance", url:"https://notebook.google.com/?_gl=1*z8utv8*_ga*MTM5MTI1MjY0Ny4xNzQ3MjgyODQ2*_ga_W0LDH41ZCB*czE3NDcyODI4NDYkbzEkZzEkdDE3NDcyODI4NDYkajYwJGwwJGgw&original_referer=https:%2F%2Fnotebooklm.google%23&pli=1", icon:"convo" }
+      ]
+    },
+  ];
+
+  const root = document.getElementById('stations');
+  STATIONS.forEach(st => {
+    const section = document.createElement('section');
+    section.className = 'station';
+
+    const head = document.createElement('div');
+    head.className = 'station-head';
+    head.innerHTML = `<h2>${st.title}</h2><span class="tagline">${st.tagline}</span>`;
+    section.appendChild(head);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    st.tools.forEach(t => {
+      const a = document.createElement('a');
+      a.className = 'card' + (st.alt ? ' alt' : '');
+      a.href = t.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.innerHTML = `
+        <span class="go">↗</span>
+        <span class="icon-badge">${ICONS[t.icon]}</span>
+        <span>
+          <div class="card-name">${t.name}</div>
+          <div class="card-label">${t.label}</div>
+        </span>`;
+      grid.appendChild(a);
+    });
+
+    section.appendChild(grid);
+    root.appendChild(section);
+  });
+</script>
+</body>
+</html>
